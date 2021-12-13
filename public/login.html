@@ -38,6 +38,9 @@
             firebase.initializeApp(firebaseConfig);
         </script>
 
+        <script>
+            const db = firebase.firestore();
+        </script>
         <nav
             class="navbar navbar-expand-lg navbar-light"
             style="background-color: #e3f2fd;">
@@ -99,59 +102,32 @@
                 </div>
             </div>
         </nav>
+
         <div class="container mt-3">
-            <input type="text" class="form-control mt-2" id="title" placeholder="title">
-            <textarea class="form-control mt-2" id="content">content</textarea>
-            <input type="text" class="form-control mt-2" id="price" placeholder="price">
-            <input class="form-control mt-2" type="file" id="image">
-            <button class="btn btn-danger mt-3" id="send">올리기</button>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="name" id="name-new">
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" placeholder="email" id="email-new">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" placeholder="pw" id="pw-new">
+            </div>
+            <button type="submit" class="btn btn-primary" id="register">가입하기</button>
         </div>
-
         <script>
-            const db = firebase.firestore();
-            const storage = firebase.storage();
+            $('#register').click(function () {
 
-            $('#send').click(function () {
-                var file = document
-                    .querySelector('#image')
-                    .files[0];
-                var storageRef = storage.ref();
-                var 저장할경로 = storageRef.child('image/파일명');
-                var 업로드작업 = 저장할경로.put(file);
+                var 이메일 = $('#email-new').val();
+                var 패스워드 = $('#pw-new').val();
 
-                var 저장할거 = {
-                    제목: $('#title').val(),
-                    가격: $('#price').val(),
-                    내용: $('#content').val(),
-                    날짜: new Date()
-                }
-                db
-                    .collection('product')
-                    .add(저장할거)
+                firebase
+                    .auth()
+                    .createUserWithEmailAndPassword(이메일, 패스워드)
                     .then((result) => {
-                        window.location.href = "/index.html" //success
+                        console.log(result.user)
                     })
-                    .catch((error) => {
-                        console.log(err) //fail
-                    })
-                });
-            업로드작업.on('state_changed',
-            // 변화시 동작하는 함수
-            null,
-            //에러시 동작하는 함수
-            (error) => {
-                console.error('실패사유는', error);
-            },
-            // 성공시 동작하는 함수
-            () => {
-                업로드작업
-                    .snapshot
-                    .ref
-                    .getDownloadURL()
-                    .then((url) => {
-                        console.log('업로드된 경로는', url);
-                    });
-            });
+            })
         </script>
         <!-- firebase sdk link goes here -->
         <script type="text/javascript" src="app.js"></script>
